@@ -37,8 +37,11 @@ pnpm-debug.log*
 
 # vercel
 .vercel
+
 # claude-code
-.claude
+.claude/
+CLAUDE.md
+
 # typescript
 *.tsbuildinfo
 next-env.d.ts
