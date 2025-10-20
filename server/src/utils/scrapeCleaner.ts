@@ -34,6 +34,9 @@ export const cleanScrapedData = (
   // Decode HTML entities
   cleaned = decodeHtmlEntities(cleaned);
 
+  // Remove hidden/invisible characters and sequences
+  cleaned = removeHiddenContent(cleaned);
+
   // Clean up whitespace
   cleaned = cleanWhitespace(cleaned);
 
@@ -88,8 +91,32 @@ const removeScriptAndStyleTags = (html: string): string => {
     "",
   );
 
+  // Remove noscript tags
+  cleaned = cleaned.replace(
+    /<noscript\b[^<]*(?:(?!<\/noscript>)<[^<]*)*<\/noscript>/gi,
+    "",
+  );
+
+  // Remove SVG elements (often contain non-visible content)
+  cleaned = cleaned.replace(
+    /<svg\b[^<]*(?:(?!<\/svg>)<[^<]*)*<\/svg>/gi,
+    "",
+  );
+
   // Remove comments
   cleaned = cleaned.replace(/<!--[\s\S]*?-->/g, "");
+
+  // Remove ARIA hidden elements
+  cleaned = cleaned.replace(
+    /<[^>]+aria-hidden=["']true["'][^>]*>[\s\S]*?<\/[^>]+>/gi,
+    "",
+  );
+
+  // Remove elements with display:none or visibility:hidden
+  cleaned = cleaned.replace(
+    /<[^>]+style=["'][^"']*(?:display\s*:\s*none|visibility\s*:\s*hidden)[^"']*["'][^>]*>[\s\S]*?<\/[^>]+>/gi,
+    "",
+  );
 
   return cleaned;
 };
@@ -172,6 +199,40 @@ const decodeHtmlEntities = (text: string): string => {
   });
 
   return decoded;
+};
+
+/**
+ * Remove hidden content and invisible characters
+ * This removes things like zero-width spaces, control characters,
+ * and suspicious numeric sequences that aren't visible
+ */
+const removeHiddenContent = (text: string): string => {
+  let cleaned = text;
+
+  // Remove zero-width characters
+  cleaned = cleaned.replace(/[\u200B-\u200D\uFEFF]/g, "");
+
+  // Remove other invisible Unicode characters
+  cleaned = cleaned.replace(/[\u00AD\u034F\u061C\u115F-\u1160]/g, "");
+
+  // Remove control characters (except newlines and tabs)
+  cleaned = cleaned.replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g, "");
+
+  // Remove suspicious single-digit sequences with spaces (like "1 2 3 4 5 6 7 8 9")
+  // This pattern matches sequences of single digits separated by spaces
+  cleaned = cleaned.replace(/\b(\d\s+){2,}\d\b/g, "");
+
+  // Remove sequences like "• 1 • 2 • 3"
+  cleaned = cleaned.replace(/[•·]\s*\d+\s*/g, "");
+
+  // Remove tab list markers that appear as numbers
+  cleaned = cleaned.replace(/^\d+\s*$/gm, "");
+
+  // Remove aria-labels and other accessibility text artifacts
+  // (These sometimes appear as isolated numbers or short sequences)
+  cleaned = cleaned.replace(/\b(tab|slide|item|step)\s+\d+\s+(of\s+\d+)?\b/gi, "");
+
+  return cleaned;
 };
 
 /**
