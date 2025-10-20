@@ -1,5 +1,25 @@
 import puppeteer from "puppeteer";
 import { chromium } from "playwright";
+import { cleanScrapedData, extractLinks } from "../utils/scrapeCleaner";
+
+export const scrapeWebpage = async (url: string) => {
+  try {
+    // Use Playwright to scrape (you can switch to Puppeteer if needed)
+    const html_play = await scrapeWebpage_play(url);
+    const html_pup = await scrapeWebpage_pup(url);
+    // Clean and extract text and links
+    const cleanedData_pup = cleanScrapedData(html_pup, url);
+    const cleanedData_play = cleanScrapedData(html_play, url);
+
+    return {
+      data_pup: cleanedData_pup,
+      data_play: cleanedData_play,
+    };
+  } catch (error: any) {
+    throw new Error(`Failed to scrape ${url}: ${error.message}`);
+  }
+};
+
 export const scrapeWebpage_pup = async (url: string) => {
   const browser = await puppeteer.launch({
     headless: true,
@@ -47,13 +67,15 @@ export const scrapeWebpage_play = async (url: string) => {
     // Trigger all dropdowns/modals to load their content
     await page.evaluate(() => {
       // Click all dropdown triggers
-      document.querySelectorAll('[role="button"]').forEach((btn: any) => {
-        btn.click();
+      const buttons = document.querySelectorAll('[role="button"]');
+      buttons.forEach((btn) => {
+        (btn as HTMLElement).click();
       });
 
       // Expand all collapsed sections
-      document.querySelectorAll("details").forEach((detail: any) => {
-        detail.open = true;
+      const details = document.querySelectorAll("details");
+      details.forEach((detail) => {
+        (detail as HTMLDetailsElement).open = true;
       });
     });
 

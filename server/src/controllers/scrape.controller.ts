@@ -1,10 +1,5 @@
 import { Request, Response } from "express";
-import {
-  scrapeWebpage_play,
-  scrapeWebpage_pup,
-  getScrapedData,
-} from "../services/scrape.service";
-import puppeteer from "puppeteer";
+import { scrapeWebpage, getScrapedData } from "../services/scrape.service";
 
 export const scrapeUrl = async (req: Request, res: Response): Promise<void> => {
   try {
@@ -13,9 +8,8 @@ export const scrapeUrl = async (req: Request, res: Response): Promise<void> => {
       res.status(400).json({ error: "URL is required" });
       return;
     }
-    const result = await scrapeWebpage_pup(url);
-    const result2 = await scrapeWebpage_play(url);
-    res.status(201).json({ puppeteer: result, playwright: result2 });
+    const { data_pup, data_play } = await scrapeWebpage(url);
+    res.status(201).json({ puppeteer: data_pup, playwright: data_play });
   } catch (error: any) {
     res.status(500).json({ error: error.message });
   }
