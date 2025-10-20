@@ -18,17 +18,7 @@ app.use(morgan("dev"));
 // Root route
 app.get("/", (req: Request, res: Response) => {
   res.json({
-    message: "Welcome to the Express TypeScript server!",
-    version: "1.0.0",
-    endpoints: {
-      health: "/api/health",
-      auth: "/api/auth",
-      scrape: "/api/scrape",
-      ask: "/api/ask",
-    },
-    supabase: supabase
-      ? "Supabase client initialized"
-      : "Supabase client not initialized",
+    message: "Welcome to the Doxt server! App is live.",
   });
 });
 
