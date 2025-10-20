@@ -35,16 +35,16 @@ export default function EmptyState() {
           className="text-4xl font-light tracking-tight text-slate-800 mb-3"
         >
           <span>Hi, how can Doxt </span>
-          <span className="text-white bg-slate-900 px-2 mr-2 rounded-md inline-block">
+          <span className="text-white bg-slate-900 px-2 rounded-md mr-2 inline-block">
             help you{" "}
           </span>
-          <AnimatePresence mode="wait" initial={false}>
+          <AnimatePresence mode="wait">
             <motion.span
               key={currentPhraseIndex}
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -10 }}
-              transition={{ duration: 0.4 }}
+              transition={{ duration: 0.5 }}
               className="text-slate-700 inline-block"
             >
               {dynamicPhrases[currentPhraseIndex]}
