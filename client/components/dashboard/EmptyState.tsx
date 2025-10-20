@@ -33,22 +33,19 @@ export default function EmptyState() {
       >
         <h2 className="text-4xl font-light tracking-tight text-slate-800 mb-3">
           <span>Hi, how can Doxt </span>
-          <span className="inline-block w-fit relative">
-            <AnimatePresence mode="wait">
-              <motion.span
-                key={currentPhraseIndex}
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -10 }}
-                transition={{ duration: 0.5 }}
-                className="text-slate-700 absolute left-0"
-              >
-                {dynamicPhrases[currentPhraseIndex]}
-              </motion.span>
-            </AnimatePresence>
-            <span className="invisible">process documents</span>
-          </span>
-          <span className="text-white bg-slate-900 px-2 rounded-md ml-1">
+          <AnimatePresence mode="wait">
+            <motion.span
+              key={currentPhraseIndex}
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              transition={{ duration: 0.5 }}
+              className="text-slate-700 inline-block"
+            >
+              {dynamicPhrases[currentPhraseIndex]}
+            </motion.span>
+          </AnimatePresence>{" "}
+          <span className="text-white bg-slate-900 px-2 rounded-md">
             today?
           </span>
         </h2>
