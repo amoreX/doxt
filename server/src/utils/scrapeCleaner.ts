@@ -222,6 +222,10 @@ const removeHiddenContent = (text: string): string => {
   // This pattern matches sequences of single digits separated by spaces
   cleaned = cleaned.replace(/\b(\d\s+){2,}\d\b/g, "");
 
+  // Remove sequences like "0 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25"
+  // Matches sequences of numbers (1-3 digits) separated by spaces
+  cleaned = cleaned.replace(/\b(\d{1,3}\s+){3,}\d{1,3}\b/g, "");
+
   // Remove sequences like "• 1 • 2 • 3"
   cleaned = cleaned.replace(/[•·]\s*\d+\s*/g, "");
 
