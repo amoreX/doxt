@@ -1,6 +1,6 @@
 import { scrapeWithPuppeteer } from "../utils/puppeteerScraper";
 import { scrapeWithPlaywright } from "../utils/playwrightScraper";
-import { cleanScrapedData, extractLinks } from "../utils/scrapeCleaner";
+import { cleanScrapedData } from "../utils/scrapeCleaner";
 
 export const scrapeWebpage = async (url: string) => {
   try {

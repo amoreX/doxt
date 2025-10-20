@@ -1,7 +1,24 @@
+"use client";
+
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
+import Loader from "@/components/loader";
+
 export default function Home() {
-  return (
-    <main className="min-h-screen p-8">
-      <h1 className="text-2xl font-bold">Welcome to Doxt</h1>
-    </main>
-  );
+  const router = useRouter();
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      const isAuth = localStorage.getItem("isAuthenticated");
+      if (isAuth === "true") {
+        router.push("/dashboard");
+      } else {
+        router.push("/auth");
+      }
+    }, 2500);
+
+    return () => clearTimeout(timer);
+  }, [router]);
+
+  return <Loader onComplete={() => {}} />;
 }
