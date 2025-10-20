@@ -4,12 +4,10 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useEffect, useState } from "react";
 
 const dynamicPhrases = [
-  "help you",
   "summarize pages",
   "analyze content",
   "extract insights",
   "answer queries",
-  "process documents",
 ];
 
 export default function EmptyState() {
@@ -31,24 +29,35 @@ export default function EmptyState() {
         transition={{ duration: 0.6, ease: "easeOut" }}
         className="text-center mb-12"
       >
-        <h2 className="text-4xl font-light tracking-tight text-slate-800 mb-3">
+        <motion.h2
+          layout
+          transition={{ layout: { duration: 0.6, ease: "easeInOut" } }}
+          className="text-4xl font-light tracking-tight text-slate-800 mb-3"
+        >
           <span>Hi, how can Doxt </span>
-          <AnimatePresence mode="wait">
+          <span className="text-white bg-slate-900 px-2 mr-2 rounded-md inline-block">
+            help you{" "}
+          </span>
+          <AnimatePresence mode="wait" initial={false}>
             <motion.span
               key={currentPhraseIndex}
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -10 }}
-              transition={{ duration: 0.5 }}
+              transition={{ duration: 0.4 }}
               className="text-slate-700 inline-block"
             >
               {dynamicPhrases[currentPhraseIndex]}
             </motion.span>
           </AnimatePresence>{" "}
-          <span className="text-white bg-slate-900 px-2 rounded-md">
+          <motion.span
+            layout
+            transition={{ layout: { duration: 0.3, ease: "easeInOut" } }}
+            className="text-white bg-slate-900 px-2 rounded-md inline-block"
+          >
             today?
-          </span>
-        </h2>
+          </motion.span>
+        </motion.h2>
         <p className="text-slate-500">
           Start a conversation and ask me anything
         </p>

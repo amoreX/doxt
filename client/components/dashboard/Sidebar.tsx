@@ -24,15 +24,11 @@ export default function Sidebar({ isOpen, conversations }: SidebarProps) {
         {conversations.map((conv) => (
           <button
             key={conv.id}
-            className="w-full text-left px-4 py-3 rounded-xl hover:bg-white/50 transition-colors duration-200 group"
+            className="w-full text-left px-4 py-3 rounded-xl hover:bg-slate-800  transition-colors duration-200 group"
           >
             <div className="flex items-start gap-3">
-              <Chat
-                className="w-4 h-4 text-slate-500 mt-0.5 flex-shrink-0"
-                weight="regular"
-              />
               <div className="flex-1 min-w-0">
-                <p className="text-sm text-slate-700 font-medium truncate group-hover:text-slate-800 transition-colors">
+                <p className="text-sm text-slate-700 font-medium truncate group-hover:text-white transition-colors">
                   {conv.title}
                 </p>
                 <p className="text-xs text-slate-500 mt-0.5">{conv.date}</p>
