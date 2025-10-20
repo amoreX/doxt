@@ -45,39 +45,6 @@ export default function ChatInput({ onSendMessage }: ChatInputProps) {
           onToggleInput={() => setShowUrlInput(!showUrlInput)}
         />
 
-        {/* Attached URLs Display (when not showing input) */}
-        <AnimatePresence>
-          {!showUrlInput && attachedUrls.length > 0 && (
-            <motion.div
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: "auto" }}
-              exit={{ opacity: 0, height: 0 }}
-              transition={{ duration: 0.3 }}
-              className="flex flex-wrap gap-2 justify-center"
-            >
-              {attachedUrls.map((attachedUrl, index) => (
-                <motion.div
-                  key={index}
-                  initial={{ opacity: 0, scale: 0.8 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0, scale: 0.8 }}
-                  transition={{ duration: 0.2 }}
-                  className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-blue-100 border border-blue-200 text-blue-700 text-sm"
-                >
-                  <Link className="w-4 h-4 flex-shrink-0" weight="bold" />
-                  <span className="truncate max-w-xs">{attachedUrl}</span>
-                  <button
-                    onClick={() => handleRemoveUrl(attachedUrl)}
-                    className="p-0.5 rounded hover:bg-blue-200 transition-colors"
-                  >
-                    ×
-                  </button>
-                </motion.div>
-              ))}
-            </motion.div>
-          )}
-        </AnimatePresence>
-
         {/* Message Input */}
         <form onSubmit={handleSubmit} className="relative">
           <div className="relative">
