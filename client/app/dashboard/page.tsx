@@ -5,6 +5,7 @@ import Sidebar from "@/components/dashboard/Sidebar";
 import Header from "@/components/dashboard/Header";
 import ChatArea from "@/components/dashboard/ChatArea";
 import ChatInput from "@/components/dashboard/ChatInput";
+import BackgroundParticles from "@/components/dashboard/BackgroundParticles";
 import { Message } from "@/types/dashboard";
 
 const dummyConversations = [
@@ -33,17 +34,20 @@ export default function DashboardPage() {
   };
 
   return (
-    <div className="flex h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-slate-100">
+    <div className="flex h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-slate-100 relative">
+      {/* Background Particles */}
+      <BackgroundParticles />
+
       {/* Sidebar */}
       <Sidebar isOpen={sidebarOpen} conversations={dummyConversations} />
 
       {/* Main Content */}
-      <div className="flex-1 flex flex-col bg-gradient-to-br from-slate-50 via-blue-50 to-slate-100">
+      <div className="flex-1 flex flex-col">
         {/* Header */}
         <Header onToggleSidebar={() => setSidebarOpen(!sidebarOpen)} />
 
         {/* Chat Area */}
-        <main className="flex-1 overflow-y-auto bg-gradient-to-br from-slate-50 via-blue-50 to-slate-100">
+        <main className="flex-1 overflow-y-auto">
           <div className="h-full px-6 py-8">
             <ChatArea messages={messages} />
           </div>
