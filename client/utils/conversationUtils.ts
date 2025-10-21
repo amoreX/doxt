@@ -14,7 +14,7 @@ export function generateConversationId(conversations: Conversation[]): number {
  */
 export function createConversation(
   conversations: Conversation[],
-  title: string
+  title: string,
 ): Conversation {
   return {
     id: generateConversationId(conversations),
@@ -46,9 +46,9 @@ export function createTitleFromUrl(url: string): string {
  * Format scraped data for display in chat
  */
 export function formatScrapedData(url: string, data: any): string {
-  return `✅ Successfully scraped URL: ${url}\n\n**Puppeteer Data:**\n${JSON.stringify(
-    data.data_pup,
-    null,
-    2
-  )}\n\n**Playwright Data:**\n${JSON.stringify(data.data_play, null, 2)}`;
+  console.log("Formatting data:", data.playwright);
+  console.log("Formatting data:", data.puppeteer);
+  return `✅ Successfully scraped URL: ${url}\n\n**Data:**\n${JSON.stringify(
+    data,
+  )}`;
 }

@@ -36,7 +36,7 @@ export default function BackgroundParticles() {
       {particles.map((particle) => (
         <motion.div
           key={particle.id}
-          className="absolute rounded-full bg-slate-700/50 blur-[1px] shadow-lg shadow-slate-600/30"
+          className="absolute rounded-full bg-slate-700/50  shadow-lg shadow-slate-600/30"
           style={{
             left: `${particle.x}%`,
             top: `${particle.y}%`,
@@ -60,7 +60,7 @@ export default function BackgroundParticles() {
 
       {/* Subtle gradient orbs for depth */}
       <motion.div
-        className="absolute w-[600px] h-[600px] rounded-full blur-3xl"
+        className="absolute w-[600px] h-[600px] rounded-full "
         style={{
           background:
             "radial-gradient(circle, rgba(100, 116, 139, 0.12) 0%, transparent 70%)", // slate tone
@@ -79,7 +79,7 @@ export default function BackgroundParticles() {
       />
 
       <motion.div
-        className="absolute w-[500px] h-[500px] rounded-full blur-3xl"
+        className="absolute w-[500px] h-[500px] rounded-full "
         style={{
           background:
             "radial-gradient(circle, rgba(71, 85, 105, 0.15) 0%, transparent 70%)", // slightly darker slate

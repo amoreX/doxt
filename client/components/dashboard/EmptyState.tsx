@@ -16,7 +16,7 @@ export default function EmptyState() {
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrentPhraseIndex((prev) => (prev + 1) % dynamicPhrases.length);
-    }, 3000);
+    }, 2000);
 
     return () => clearInterval(interval);
   }, []);
