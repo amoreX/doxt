@@ -1,7 +1,19 @@
 import { Plus, Chat } from "@phosphor-icons/react";
 import { SidebarProps } from "@/types/dashboard";
 
-export default function Sidebar({ isOpen, conversations }: SidebarProps) {
+interface ExtendedSidebarProps extends SidebarProps {
+  currentConversationId: number | null;
+  onConversationClick: (id: number) => void;
+  onNewChat: () => void;
+}
+
+export default function Sidebar({
+  isOpen,
+  conversations,
+  currentConversationId,
+  onConversationClick,
+  onNewChat,
+}: ExtendedSidebarProps) {
   return (
     <div
       className={`${
@@ -10,7 +22,10 @@ export default function Sidebar({ isOpen, conversations }: SidebarProps) {
     >
       {/* Sidebar Header */}
       <div className="p-4 border-b border-white/20">
-        <button className="w-full flex items-center gap-3 px-4 py-3 rounded-xl bg-slate-800 text-white hover:bg-slate-700 transition-all duration-300 shadow-lg shadow-slate-800/20">
+        <button
+          onClick={onNewChat}
+          className="w-full flex items-center gap-3 px-4 py-3 rounded-xl bg-slate-800 text-white hover:bg-slate-700 transition-all duration-300 shadow-lg shadow-slate-800/20"
+        >
           <Plus className="w-5 h-5" weight="bold" />
           <span className="font-medium">New Chat</span>
         </button>
@@ -24,11 +39,20 @@ export default function Sidebar({ isOpen, conversations }: SidebarProps) {
         {conversations.map((conv) => (
           <button
             key={conv.id}
-            className="w-full text-left px-4 py-3 rounded-xl hover:bg-slate-800  transition-colors duration-200 group"
+            onClick={() => onConversationClick(conv.id)}
+            className={`w-full text-left px-4 py-3 rounded-xl hover:bg-slate-800 transition-colors duration-200 group ${
+              currentConversationId === conv.id ? "bg-slate-800" : ""
+            }`}
           >
             <div className="flex items-start gap-3">
               <div className="flex-1 min-w-0">
-                <p className="text-sm text-slate-700 font-medium truncate group-hover:text-white transition-colors">
+                <p
+                  className={`text-sm font-medium truncate group-hover:text-white transition-colors ${
+                    currentConversationId === conv.id
+                      ? "text-white"
+                      : "text-slate-700"
+                  }`}
+                >
                   {conv.title}
                 </p>
                 <p className="text-xs text-slate-500 mt-0.5">{conv.date}</p>

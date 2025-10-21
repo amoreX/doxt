@@ -6,35 +6,56 @@ import Header from "@/components/dashboard/Header";
 import ChatArea from "@/components/dashboard/ChatArea";
 import ChatInput from "@/components/dashboard/ChatInput";
 import BackgroundParticles from "@/components/dashboard/BackgroundParticles";
-import { Message } from "@/types/dashboard";
-
-const dummyConversations = [
-  { id: 1, title: "Website scraping help", date: "Today" },
-  { id: 2, title: "Document analysis", date: "Yesterday" },
-  { id: 3, title: "Data extraction tips", date: "2 days ago" },
-];
+import { useConversationsStore } from "@/store/conversationsStore";
+import { createConversation, createTitleFromMessage } from "@/utils/conversationUtils";
 
 export default function DashboardPage() {
-  const [messages, setMessages] = useState<Message[]>([]);
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
+  const {
+    conversations,
+    messages,
+    currentConversationId,
+    setCurrentConversation,
+    addMessage,
+    addConversation,
+  } = useConversationsStore();
+
   const handleSendMessage = (message: string) => {
-    setMessages([...messages, { role: "user", content: message }]);
+    let conversationId = currentConversationId;
+
+    // If it's a new conversation (id = -1), create a new conversation
+    if (currentConversationId === -1) {
+      const title = createTitleFromMessage(message);
+      const newConversation = createConversation(conversations, title);
+
+      addConversation(newConversation);
+      setCurrentConversation(newConversation.id);
+      conversationId = newConversation.id;
+    }
+
+    addMessage({
+      role: "user",
+      content: message,
+      conversationId: conversationId!,
+    });
 
     // Dummy response
     setTimeout(() => {
-      setMessages((prev) => [
-        ...prev,
-        {
-          role: "assistant",
-          content: "This is a dummy response. Functionality coming soon!",
-        },
-      ]);
+      addMessage({
+        role: "assistant",
+        content: "This is a dummy response. Functionality coming soon!",
+        conversationId: conversationId!,
+      });
     }, 500);
   };
 
-  const handleAddMessage = (message: Message) => {
-    setMessages((prev) => [...prev, message]);
+  const handleConversationClick = (id: number) => {
+    setCurrentConversation(id);
+  };
+
+  const handleNewChat = () => {
+    setCurrentConversation(-1);
   };
 
   return (
@@ -43,7 +64,13 @@ export default function DashboardPage() {
       <BackgroundParticles />
 
       {/* Sidebar */}
-      <Sidebar isOpen={sidebarOpen} conversations={dummyConversations} />
+      <Sidebar
+        isOpen={sidebarOpen}
+        conversations={conversations}
+        currentConversationId={currentConversationId}
+        onConversationClick={handleConversationClick}
+        onNewChat={handleNewChat}
+      />
 
       {/* Main Content */}
       <div className="flex-1 flex flex-col">
@@ -58,7 +85,10 @@ export default function DashboardPage() {
         </main>
 
         {/* Chat Input */}
-        <ChatInput onSendMessage={handleSendMessage} onAddMessage={handleAddMessage} />
+        <ChatInput
+          onSendMessage={handleSendMessage}
+          disabled={false}
+        />
       </div>
     </div>
   );

@@ -5,17 +5,38 @@ import { motion, AnimatePresence } from "framer-motion";
 import { PaperPlaneRight, Link, CloudArrowDown } from "@phosphor-icons/react";
 import UrlInput from "./UrlInput";
 import { ChatInputProps } from "@/types/dashboard";
+import { useConversationsStore } from "@/store/conversationsStore";
+import {
+  createConversation,
+  createTitleFromUrl,
+  formatScrapedData,
+} from "@/utils/conversationUtils";
 import axios from "axios";
 
-export default function ChatInput({ onSendMessage, onAddMessage }: ChatInputProps) {
+interface ExtendedChatInputProps extends Omit<ChatInputProps, "onAddMessage"> {
+  disabled?: boolean;
+}
+
+export default function ChatInput({
+  onSendMessage,
+  disabled,
+}: ExtendedChatInputProps) {
   const [message, setMessage] = useState("");
   const [showUrlInput, setShowUrlInput] = useState(false);
   const [attachedUrls, setAttachedUrls] = useState<string[]>([]);
   const [isAddingToContext, setIsAddingToContext] = useState(false);
 
+  const {
+    currentConversationId,
+    addMessage,
+    addConversation,
+    setCurrentConversation,
+    conversations,
+  } = useConversationsStore();
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!message.trim()) return;
+    if (!message.trim() || disabled) return;
 
     onSendMessage(message);
     setMessage("");
@@ -31,21 +52,46 @@ export default function ChatInput({ onSendMessage, onAddMessage }: ChatInputProp
   };
 
   const handleAddToContext = async () => {
-    if (attachedUrls.length === 0 || !onAddMessage) return;
+    if (attachedUrls.length === 0) return;
+
+    let conversationId = currentConversationId;
+
+    // If it's a new conversation (id = -1), create a new conversation
+    if (currentConversationId === -1) {
+      const title = createTitleFromUrl(attachedUrls[0]);
+      const newConversation = createConversation(conversations, title);
+
+      addConversation(newConversation);
+      setCurrentConversation(newConversation.id);
+      conversationId = newConversation.id;
+    }
 
     setIsAddingToContext(true);
+
     try {
       const response = await axios.post("http://localhost:5000/api/scrape", {
         url: attachedUrls[0],
       });
 
-      onAddMessage({ role: "assistant", content: "URL SCRAPED" });
-      onAddMessage({ role: "assistant", content: JSON.stringify(response.data, null, 2) });
+      const formattedContent = formatScrapedData(attachedUrls[0], response.data);
+
+      addMessage({
+        role: "assistant",
+        content: formattedContent,
+        conversationId: conversationId!,
+      });
 
       setAttachedUrls([]);
     } catch (error: any) {
-      const errorMessage = `❌ Failed to scrape URL: ${error.response?.data?.error || error.message}`;
-      onSendMessage(errorMessage);
+      const errorMessage = `❌ Failed to scrape URL: ${
+        error.response?.data?.error || error.message
+      }`;
+
+      addMessage({
+        role: "assistant",
+        content: errorMessage,
+        conversationId: conversationId!,
+      });
     } finally {
       setIsAddingToContext(false);
     }
@@ -97,8 +143,13 @@ export default function ChatInput({ onSendMessage, onAddMessage }: ChatInputProp
               type="text"
               value={message}
               onChange={(e) => setMessage(e.target.value)}
-              placeholder="Ask anything..."
-              className="w-full px-6 py-4 pr-24 rounded-2xl border border-slate-200 bg-white/90 backdrop-blur-sm focus:border-blue-400 focus:ring-2 focus:ring-blue-400/20 outline-none transition-all duration-300 shadow-sm"
+              placeholder={
+                currentConversationId === -1
+                  ? "Start a new conversation..."
+                  : "Ask anything..."
+              }
+              disabled={disabled}
+              className="w-full px-6 py-4 pr-24 rounded-2xl border border-slate-200 bg-white/90 backdrop-blur-sm focus:border-blue-400 focus:ring-2 focus:ring-blue-400/20 outline-none transition-all duration-300 shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
             />
             <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-1">
               <button
@@ -115,7 +166,7 @@ export default function ChatInput({ onSendMessage, onAddMessage }: ChatInputProp
               </button>
               <button
                 type="submit"
-                disabled={!message.trim()}
+                disabled={!message.trim() || disabled}
                 className="p-2 rounded-xl bg-gradient-to-r from-blue-500 to-blue-600 text-white hover:from-blue-600 hover:to-blue-700 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-blue-500/25"
               >
                 <PaperPlaneRight className="w-5 h-5" weight="bold" />
