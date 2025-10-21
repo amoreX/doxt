@@ -10,7 +10,8 @@ export default function UrlInput({ attachedUrls, onAddUrl, onRemoveUrl, showInpu
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (url.trim() && !attachedUrls.includes(url.trim())) {
+    // Only allow 1 URL maximum
+    if (url.trim() && !attachedUrls.includes(url.trim()) && attachedUrls.length === 0) {
       onAddUrl(url.trim());
       setUrl("");
       onToggleInput();
@@ -21,7 +22,7 @@ export default function UrlInput({ attachedUrls, onAddUrl, onRemoveUrl, showInpu
     <div className="space-y-3">
       {/* URL Input Form */}
       <AnimatePresence>
-        {showInput && (
+        {showInput && attachedUrls.length === 0 && (
           <motion.form
             initial={{ opacity: 0, height: 0, scale: 0.95 }}
             animate={{ opacity: 1, height: "auto", scale: 1 }}

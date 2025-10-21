@@ -26,7 +26,7 @@ export default function ChatArea({ messages }: ChatAreaProps) {
                 : "bg-white/80 backdrop-blur-sm border border-s-slate-600 text-slate-800"
             }`}
           >
-            <p className="text-sm leading-relaxed">{msg.content}</p>
+            <p className="text-sm leading-relaxed whitespace-pre-wrap">{msg.content}</p>
           </div>
         </motion.div>
       ))}

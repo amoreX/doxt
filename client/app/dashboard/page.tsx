@@ -33,6 +33,10 @@ export default function DashboardPage() {
     }, 500);
   };
 
+  const handleAddMessage = (message: Message) => {
+    setMessages((prev) => [...prev, message]);
+  };
+
   return (
     <div className="flex h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-slate-100 relative">
       {/* Background Particles */}
@@ -54,7 +58,7 @@ export default function DashboardPage() {
         </main>
 
         {/* Chat Input */}
-        <ChatInput onSendMessage={handleSendMessage} />
+        <ChatInput onSendMessage={handleSendMessage} onAddMessage={handleAddMessage} />
       </div>
     </div>
   );

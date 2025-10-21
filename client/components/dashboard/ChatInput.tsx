@@ -2,14 +2,16 @@
 
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { PaperPlaneRight, Link } from "@phosphor-icons/react";
+import { PaperPlaneRight, Link, CloudArrowDown } from "@phosphor-icons/react";
 import UrlInput from "./UrlInput";
 import { ChatInputProps } from "@/types/dashboard";
+import axios from "axios";
 
-export default function ChatInput({ onSendMessage }: ChatInputProps) {
+export default function ChatInput({ onSendMessage, onAddMessage }: ChatInputProps) {
   const [message, setMessage] = useState("");
   const [showUrlInput, setShowUrlInput] = useState(false);
   const [attachedUrls, setAttachedUrls] = useState<string[]>([]);
+  const [isAddingToContext, setIsAddingToContext] = useState(false);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -28,6 +30,27 @@ export default function ChatInput({ onSendMessage }: ChatInputProps) {
     setAttachedUrls(attachedUrls.filter((u) => u !== urlToRemove));
   };
 
+  const handleAddToContext = async () => {
+    if (attachedUrls.length === 0 || !onAddMessage) return;
+
+    setIsAddingToContext(true);
+    try {
+      const response = await axios.post("http://localhost:5000/api/scrape", {
+        url: attachedUrls[0],
+      });
+
+      onAddMessage({ role: "assistant", content: "URL SCRAPED" });
+      onAddMessage({ role: "assistant", content: JSON.stringify(response.data, null, 2) });
+
+      setAttachedUrls([]);
+    } catch (error: any) {
+      const errorMessage = `❌ Failed to scrape URL: ${error.response?.data?.error || error.message}`;
+      onSendMessage(errorMessage);
+    } finally {
+      setIsAddingToContext(false);
+    }
+  };
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -44,6 +67,28 @@ export default function ChatInput({ onSendMessage }: ChatInputProps) {
           showInput={showUrlInput}
           onToggleInput={() => setShowUrlInput(!showUrlInput)}
         />
+
+        {/* Add to Context Button */}
+        <AnimatePresence>
+          {attachedUrls.length > 0 && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: "auto" }}
+              exit={{ opacity: 0, height: 0 }}
+              transition={{ duration: 0.3 }}
+              className="flex justify-center"
+            >
+              <button
+                onClick={handleAddToContext}
+                disabled={isAddingToContext}
+                className="px-4 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-white text-sm font-medium transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 shadow-lg"
+              >
+                <CloudArrowDown className="w-4 h-4" weight="bold" />
+                {isAddingToContext ? "Adding to context..." : "Add to context"}
+              </button>
+            </motion.div>
+          )}
+        </AnimatePresence>
 
         {/* Message Input */}
         <form onSubmit={handleSubmit} className="relative">

@@ -1,6 +1,7 @@
 import express, { Express, Request, Response } from "express";
 import morgan from "morgan";
 import dotenv from "dotenv";
+import cors from "cors";
 import { supabase } from "./utils/supabase";
 import routes from "./routes";
 
@@ -11,6 +12,7 @@ const app: Express = express();
 const PORT = process.env.PORT || 5000;
 
 // Middleware
+app.use(cors()); // Allow all origins for testing
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(morgan("dev"));

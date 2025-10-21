@@ -24,6 +24,7 @@ export interface ChatAreaProps {
 
 export interface ChatInputProps {
   onSendMessage: (message: string) => void;
+  onAddMessage?: (message: Message) => void;
 }
 
 export interface UrlInputProps {
