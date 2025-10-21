@@ -1,7 +1,7 @@
 import { scrapeWithPuppeteer } from "../utils/puppeteerScraper";
 import { scrapeWithPlaywright } from "../utils/playwrightScraper";
 import { cleanScrapedData } from "../utils/scrapeCleaner";
-
+import { addToMemory } from "../utils/addingToMemory";
 export const scrapeWebpage = async (url: string) => {
   try {
     console.log(`[Scraping] Starting parallel scrape for: ${url}`);
@@ -15,12 +15,14 @@ export const scrapeWebpage = async (url: string) => {
     console.log(`[Cleaning] Processing scraped data...`);
 
     // Clean both results
-    const cleanedData_play = cleanScrapedData(html_play, url);
+    // const cleanedData_play = cleanScrapedData(html_play, url);
     const cleanedData_pup = cleanScrapedData(html_pup, url);
 
+    // Add cleaned data to memory
+    // Adding puppeteer data to memory
+    await addToMemory("conversation_id", cleanedData_pup);
     return {
-      data_pup: cleanedData_pup,
-      data_play: cleanedData_play,
+      status: true,
     };
   } catch (error: any) {
     throw new Error(`Failed to scrape ${url}: ${error.message}`);

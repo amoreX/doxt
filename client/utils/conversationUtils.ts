@@ -46,9 +46,5 @@ export function createTitleFromUrl(url: string): string {
  * Format scraped data for display in chat
  */
 export function formatScrapedData(url: string, data: any): string {
-  console.log("Formatting data:", data.playwright);
-  console.log("Formatting data:", data.puppeteer);
-  return `✅ Successfully scraped URL: ${url}\n\n**Data:**\n${JSON.stringify(
-    data,
-  )}`;
+  return `✅ Successfully scraped URL: ${url}`;
 }

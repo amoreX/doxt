@@ -8,8 +8,12 @@ export const scrapeUrl = async (req: Request, res: Response): Promise<void> => {
       res.status(400).json({ error: "URL is required" });
       return;
     }
-    const { data_pup, data_play } = await scrapeWebpage(url);
-    res.status(201).json({ puppeteer: data_pup, playwright: data_play });
+    const { status } = await scrapeWebpage(url);
+    if (status) {
+      res.status(201).json({ message: `${url} has been added as Context` });
+    } else {
+      res.status(400).json({ message: "Failed to insert url as context" });
+    }
   } catch (error: any) {
     res.status(500).json({ error: error.message });
   }
