@@ -48,3 +48,36 @@ export function createTitleFromUrl(url: string): string {
 export function formatScrapedData(url: string, data: any): string {
   return `✅ Successfully scraped URL: ${url}`;
 }
+
+/**
+ * Format scrape response with successful and failed URLs
+ */
+export function formatScrapeResponse(response: {
+  successful: string[];
+  failed: Array<{ url: string; error: string }>;
+  successCount: number;
+  failCount: number;
+}): string {
+  const { successful, failed, successCount, failCount } = response;
+
+  let message = "";
+
+  // Successful URLs
+  if (successCount > 0) {
+    message += `**✅ Successfully Added (${successCount}):**\n`;
+    successful.forEach((url, index) => {
+      message += `${index + 1}. ${url}\n`;
+    });
+    message += "\n";
+  }
+
+  // Failed URLs
+  if (failCount > 0) {
+    message += `**❌ Failed (${failCount}):**\n`;
+    failed.forEach((item, index) => {
+      message += `${index + 1}. ${item.url}\n   *Error: ${item.error}*\n`;
+    });
+  }
+
+  return message.trim();
+}

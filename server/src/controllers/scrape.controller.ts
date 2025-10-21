@@ -4,16 +4,33 @@ import { scrapeWebpage, getScrapedData } from "../services/scrape.service";
 export const scrapeUrl = async (req: Request, res: Response): Promise<void> => {
   try {
     const { url } = req.body;
+
+    // Validate that url is provided and is an array
     if (!url) {
       res.status(400).json({ error: "URL is required" });
       return;
     }
-    const { status } = await scrapeWebpage(url);
-    if (status) {
-      res.status(201).json({ message: `${url} has been added as Context` });
-    } else {
-      res.status(400).json({ message: "Failed to insert url as context" });
+
+    if (!Array.isArray(url)) {
+      res.status(400).json({ error: "URL must be an array of strings" });
+      return;
     }
+
+    if (url.length === 0) {
+      res.status(400).json({ error: "URL array cannot be empty" });
+      return;
+    }
+
+    // Scrape all URLs
+    const result = await scrapeWebpage(url);
+
+    res.status(201).json({
+      message: "Scraping completed",
+      successful: result.successful,
+      failed: result.failed,
+      successCount: result.successful.length,
+      failCount: result.failed.length,
+    });
   } catch (error: any) {
     res.status(500).json({ error: error.message });
   }

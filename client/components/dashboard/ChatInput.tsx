@@ -9,7 +9,7 @@ import { useConversationsStore } from "@/store/conversationsStore";
 import {
   createConversation,
   createTitleFromUrl,
-  formatScrapedData,
+  formatScrapeResponse,
 } from "@/utils/conversationUtils";
 import axios from "axios";
 
@@ -58,7 +58,11 @@ export default function ChatInput({
 
     // If it's a new conversation (id = -1), create a new conversation
     if (currentConversationId === -1) {
-      const title = createTitleFromUrl(attachedUrls[0]);
+      const title =
+        attachedUrls.length === 1
+          ? createTitleFromUrl(attachedUrls[0])
+          : `Scraped: ${attachedUrls.length} URLs`;
+
       const newConversation = createConversation(conversations, title);
 
       addConversation(newConversation);
@@ -69,11 +73,13 @@ export default function ChatInput({
     setIsAddingToContext(true);
 
     try {
+      // Send all URLs as an array
       const response = await axios.post("http://localhost:5000/api/scrape", {
-        url: attachedUrls[0],
+        url: attachedUrls,
       });
 
-      const formattedContent = formatScrapedData(attachedUrls[0], response.data);
+      // Format the response showing successful and failed URLs
+      const formattedContent = formatScrapeResponse(response.data);
 
       addMessage({
         role: "assistant",
@@ -83,7 +89,7 @@ export default function ChatInput({
 
       setAttachedUrls([]);
     } catch (error: any) {
-      const errorMessage = `❌ Failed to scrape URL: ${
+      const errorMessage = `❌ Failed to scrape URLs: ${
         error.response?.data?.error || error.message
       }`;
 

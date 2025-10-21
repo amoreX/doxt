@@ -5,16 +5,23 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Link, X } from "@phosphor-icons/react";
 import { UrlInputProps } from "@/types/dashboard";
 
-export default function UrlInput({ attachedUrls, onAddUrl, onRemoveUrl, showInput, onToggleInput }: UrlInputProps) {
+export default function UrlInput({
+  attachedUrls,
+  onAddUrl,
+  onRemoveUrl,
+  showInput,
+  onToggleInput,
+}: UrlInputProps) {
   const [url, setUrl] = useState("");
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // Only allow 1 URL maximum
-    if (url.trim() && !attachedUrls.includes(url.trim()) && attachedUrls.length === 0) {
-      onAddUrl(url.trim());
+    const trimmedUrl = url.trim();
+
+    if (trimmedUrl && !attachedUrls.includes(trimmedUrl)) {
+      onAddUrl(trimmedUrl);
       setUrl("");
-      onToggleInput();
+      // Don't close input after adding - allow multiple URLs
     }
   };
 
@@ -22,7 +29,7 @@ export default function UrlInput({ attachedUrls, onAddUrl, onRemoveUrl, showInpu
     <div className="space-y-3">
       {/* URL Input Form */}
       <AnimatePresence>
-        {showInput && attachedUrls.length === 0 && (
+        {showInput && (
           <motion.form
             initial={{ opacity: 0, height: 0, scale: 0.95 }}
             animate={{ opacity: 1, height: "auto", scale: 1 }}
@@ -40,14 +47,15 @@ export default function UrlInput({ attachedUrls, onAddUrl, onRemoveUrl, showInpu
                 type="url"
                 value={url}
                 onChange={(e) => setUrl(e.target.value)}
-                placeholder="Enter website URL..."
+                placeholder="Enter website URL (press Enter to add more)..."
                 className="w-full pl-10 pr-4 py-2 rounded-lg border border-slate-200 bg-white/90 backdrop-blur-sm focus:border-blue-400 focus:ring-2 focus:ring-blue-400/20 outline-none transition-all duration-300 text-sm"
                 autoFocus
               />
             </div>
             <button
               type="submit"
-              className="px-3 py-2 rounded-lg bg-blue-500 hover:bg-blue-600 text-white text-sm font-medium transition-colors"
+              disabled={!url.trim()}
+              className="px-3 py-2 rounded-lg bg-blue-500 hover:bg-blue-600 text-white text-sm font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
               Add
             </button>
@@ -56,7 +64,7 @@ export default function UrlInput({ attachedUrls, onAddUrl, onRemoveUrl, showInpu
               onClick={onToggleInput}
               className="px-3 py-2 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-sm font-medium transition-colors"
             >
-              Cancel
+              Done
             </button>
           </motion.form>
         )}
@@ -71,7 +79,7 @@ export default function UrlInput({ attachedUrls, onAddUrl, onRemoveUrl, showInpu
             exit={{ opacity: 0 }}
             className="flex flex-wrap gap-2 justify-center"
           >
-            {attachedUrls.map((attachedUrl, index) => (
+            {attachedUrls.map((attachedUrl) => (
               <motion.div
                 key={attachedUrl}
                 initial={{ opacity: 0, scale: 0.8 }}
@@ -85,6 +93,7 @@ export default function UrlInput({ attachedUrls, onAddUrl, onRemoveUrl, showInpu
                 <button
                   onClick={() => onRemoveUrl(attachedUrl)}
                   className="p-0.5 rounded hover:bg-blue-200 transition-colors"
+                  aria-label="Remove URL"
                 >
                   <X className="w-3.5 h-3.5" weight="bold" />
                 </button>
